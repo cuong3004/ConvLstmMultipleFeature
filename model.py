@@ -55,6 +55,7 @@ class CnnModel(nn.Module):
         return x
 
 # model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class LstmModel(nn.Module):
 
     def __init__(self, n_feature, num_classes, n_hidden, n_layers=2, drop_prob=0.2):
@@ -69,7 +70,9 @@ class LstmModel(nn.Module):
         self.fc1 = nn.Linear(int(n_hidden), int(n_hidden/2))
         self.fc2 = nn.Linear(int(n_hidden/2), num_classes)
 
-    def forward(self, x, hidden):
+    def forward(self, x):
+
+        x = torch.squeeze(x, 1)
         
         state = self.init_state(x.shape[0], self.device)
         l_out, state = self.lstm(x, state)
@@ -78,16 +81,16 @@ class LstmModel(nn.Module):
         out = self.fc1(out[:, -1, :])
         out = self.fc2(out)
 
-        return out, state
+        return out
     
     def init_state(self, batch_size, device):
-        return (torch.zeros((batch_size, self.n_hidden), device=device),
-            torch.zeros((batch_size, self.n_hidden), device=device))
+        return (torch.zeros((self.n_layers, batch_size, self.n_hidden), device=device),
+                torch.zeros((self.n_layers, batch_size, self.n_hidden), device=device))
 
 
 
 class CnnLstm(nn.Module):
-    def __init__(self, cnn=None, lstm=None, num_classes):
+    def __init__(self, cnn=None, lstm=None, num_classes=None):
         super().__init__()
         self.cnn = cnn
         self.lstm = lstm 
@@ -95,7 +98,7 @@ class CnnLstm(nn.Module):
     
     def forward(self, x):
         out1 = self.cnn(x)
-        out2, _ = self.lstm(x) 
+        out2 = self.lstm(x) 
         # out = x.
         return out
 

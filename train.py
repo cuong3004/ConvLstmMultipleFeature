@@ -82,9 +82,11 @@ valid_loader = DataLoader(data_valid, batch_size=batch_size, shuffle=True)
 cnn_model = mobilenet_v2()
 cnn_model.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
 cnn_model.classifier[1] = torch.nn.Linear(1280,num_classes)
+
+model_lstm = LstmModel(n_feature=172, num_classes=10, n_hidden=256, n_layers=2)
 # cnn_model = CNNModel()
 
-model_cnnlstm = CnnLstm(cnn_model)
+model_cnnlstm = CnnLstm(cnn_model, model_lstm)
 model = LitClassification(model_cnnlstm)
 
 callbacks = [input_monitor_train, input_monitor_valid, checkpoint_callback, early_stop_callback]

@@ -74,7 +74,7 @@ class LstmModel(nn.Module):
 
         x = torch.squeeze(x, 1)
         
-        state = self.init_state(x.shape[0], self.device)
+        state = self.init_state(x.shape[0], device)
         l_out, state = self.lstm(x, state)
         out = self.dropout(l_out)
 
@@ -94,11 +94,15 @@ class CnnLstm(nn.Module):
         super().__init__()
         self.cnn = cnn
         self.lstm = lstm 
-        self.num_classes
+        self.fc = nn.Linear(20, num_classes)
+
     
     def forward(self, x):
         out1 = self.cnn(x)
-        out2 = self.lstm(x) 
+        out2 = self.lstm(x)
+        
+        out = torch.cat((out1, out2), 1)
+        out = self.fc(out)
         # out = x.
         return out
 

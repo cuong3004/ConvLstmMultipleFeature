@@ -65,7 +65,7 @@ valid_loader = DataLoader(data_valid, batch_size=batch_size, shuffle=True)
 
 
 
-model_lstm = LstmModel(n_feature=128, num_classes=10, n_hidden=256, n_layers=2)
+model_lstm = LstmModel(n_feature=172, num_classes=10, n_hidden=256, n_layers=2)
 
 model = LitClassification(model_lstm)
 

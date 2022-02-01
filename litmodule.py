@@ -28,6 +28,7 @@ class LitClassification(pl.LightningModule):
         x, y = train_batch
         out = self.model(x) 
         loss = F.cross_entropy(out, y)
+        # print(loss)
         self.log('train_loss', loss.item())
         self.train_acc(out, y)
         self.log('train_acc', self.train_acc, on_step=True, on_epoch=False)

@@ -54,6 +54,32 @@ class CNNModel(nn.Module):
         x = self.fc3(x)
         return x
 
+# model
+class LSTMModel(nn.Module):
+
+    def __init__(self, n_feature, num_classes, n_hidden, n_layers=2, drop_prob=0.2):
+        super().__init__()
+        self.drop_prob = drop_prob
+        self.n_layers = n_layers
+        self.n_hidden = n_hidden
+        self.n_feature = n_feature
+        self.lstm = nn.LSTM(self.n_feature, self.n_hidden, self.n_layers, dropout=self.drop_prob, batch_first=True)
+        self.dropout = nn.Dropout(drop_prob)
+        self.relu = nn.ReLU()
+        self.fc1 = nn.Linear(int(n_hidden), int(n_hidden/2))
+        self.fc2 = nn.Linear(int(n_hidden/2), num_classes)
+
+    def forward(self, x, hidden):
+
+        l_out, l_hidden = self.lstm(x, hidden)
+        out = self.dropout(l_out)
+
+        out = self.fc1(out)
+        out = self.fc2(out[:, -1, :])
+
+        return out, l_hidden
+
+
 
 class CnnLstm(nn.Module):
     def __init__(self, cnn, lstm=None):

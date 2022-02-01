@@ -9,11 +9,23 @@ if not os.path.exists(folder_checkpoint): # create folder
     os.mkdir(folder_checkpoint)
 
 
-class InputMonitor(pl.Callback):
+class InputMonitorTrain(pl.Callback):
 
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx):
         # return
         if (batch_idx + 1) % trainer.log_every_n_steps == 0:
+            
+            x, y = batch
+
+            logger = trainer.logger
+            logger.experiment.add_histogram("input", x, global_step=trainer.global_step)
+            logger.experiment.add_histogram("target", y, global_step=trainer.global_step)
+
+class InputMonitorValid(pl.Callback):
+
+    def on_batch_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx):
+        # return
+        if (batch_idx) == 1:
             
             x, y = batch
 
@@ -33,4 +45,5 @@ checkpoint_callback = ModelCheckpoint(
 
 early_stop_callback = EarlyStopping(monitor="valid_loss", patience=3, verbose=False, mode="min")
 
-input_monitor = InputMonitor()
+input_monitor_train = InputMonitorTrain()
+input_monitor_valid = InputMonitorValid()

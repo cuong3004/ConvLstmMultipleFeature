@@ -26,7 +26,7 @@ mean, std = npobj['mean'], npobj['std']
 print("mean, std : ", mean, std)
 
 transform = A.Compose([
-    A.Normalize(mean=127.5, std=127.5),
+    A.Normalize(mean=mean, std=std, max_pixel_value=1),
     ToTensorV2()
 ])
 
@@ -54,7 +54,7 @@ dataset = CustomData(
                 transform=transform,
                 )
 
-dataloader
+
 train_len = int(len(dataset)*0.8)
 valid_len = len(dataset)-train_len
 data_train, data_valid = random_split(dataset,[train_len, valid_len])

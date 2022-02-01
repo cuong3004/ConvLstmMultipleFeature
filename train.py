@@ -6,7 +6,7 @@ from utils import *
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import librosa.display
-from model import CnnLstm, CNNModel
+from model import CnnLstm, CNNModel, LstmModel
 from torch.utils.data import DataLoader, random_split
 import pytorch_lightning as pl
 from litmodule import LitClassification
@@ -86,7 +86,7 @@ cnn_model.classifier[1] = torch.nn.Linear(1280,num_classes)
 model_lstm = LstmModel(n_feature=172, num_classes=10, n_hidden=256, n_layers=2)
 # cnn_model = CNNModel()
 
-model_cnnlstm = CnnLstm(cnn_model, model_lstm)
+model_cnnlstm = CnnLstm(cnn_model, model_lstm, num_classes)
 model = LitClassification(model_cnnlstm)
 
 callbacks = [input_monitor_train, input_monitor_valid, checkpoint_callback, early_stop_callback]

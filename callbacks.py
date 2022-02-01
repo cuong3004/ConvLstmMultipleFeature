@@ -23,7 +23,7 @@ class InputMonitorTrain(pl.Callback):
 
 class InputMonitorValid(pl.Callback):
 
-    def on_batch_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx):
+    def on_valid_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx):
         # return
         if (batch_idx) == 1:
             
@@ -38,12 +38,16 @@ checkpoint_callback = ModelCheckpoint(
     dirpath=folder_checkpoint,
     filename="model",
     save_top_k=1,
-    verbose=False,
+    verbose=True,
     monitor='valid_loss',
     mode='min',    
 )
 
-early_stop_callback = EarlyStopping(monitor="valid_loss", patience=3, verbose=False, mode="min")
-
+early_stop_callback = EarlyStopping(
+                monitor="valid_loss", 
+                patience=6, 
+                verbose=False, 
+                mode="min")
+                
 input_monitor_train = InputMonitorTrain()
 input_monitor_valid = InputMonitorValid()

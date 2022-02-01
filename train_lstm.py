@@ -6,7 +6,7 @@ from utils import *
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import librosa.display
-from model import CnnLstm, CNNModel
+from model import CnnLstm, CNNModel, LstmModel
 from torch.utils.data import DataLoader, random_split
 import pytorch_lightning as pl
 from litmodule import LitClassification
@@ -65,27 +65,9 @@ valid_loader = DataLoader(data_valid, batch_size=batch_size, shuffle=True)
 
 
 
+model_lstm = LstmModel(n_feature=128, num_classes=10, n_hidden=256, n_layers=2)
 
-# for id, (image, label) in tqdm(enumerate(dataset)):
-    
-
-
-# for id, (image, label) in tqdm(enumerate(dataset)):
-#     # librosa.display.specshow(image)
-#     # plt.savefig(f"image/{id}_{label}.png")
-#     # plt.clf()
-#     print(image.shape)
-#     if id == 10:
-#         break
-
-# model_cnn = CnnLstm(cnn_model, lstm_model)
-cnn_model = mobilenet_v2()
-cnn_model.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
-cnn_model.classifier[1] = torch.nn.Linear(1280,num_classes)
-# cnn_model = CNNModel()
-
-model_cnnlstm = CnnLstm(cnn_model)
-model = LitClassification(model_cnnlstm)
+model = LitClassification(model_lstm)
 
 callbacks = [input_monitor_train, input_monitor_valid, checkpoint_callback, early_stop_callback]
 

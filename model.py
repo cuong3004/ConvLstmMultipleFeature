@@ -28,7 +28,7 @@ class CNNModel(nn.Module):
         super().__init__() 
 
         self.cnn1 = CNNBlock(1, 32, )
-class CNNModel(nn.Module):
+class CnnModel(nn.Module):
 
     def __init__(self):
         super(CNNModel, self).__init__()
@@ -55,7 +55,7 @@ class CNNModel(nn.Module):
         return x
 
 # model
-class LSTMModel(nn.Module):
+class LstmModel(nn.Module):
 
     def __init__(self, n_feature, num_classes, n_hidden, n_layers=2, drop_prob=0.2):
         super().__init__()
@@ -70,24 +70,33 @@ class LSTMModel(nn.Module):
         self.fc2 = nn.Linear(int(n_hidden/2), num_classes)
 
     def forward(self, x, hidden):
-
-        l_out, l_hidden = self.lstm(x, hidden)
+        
+        state = self.init_state(x.shape[0], self.device)
+        l_out, state = self.lstm(x, state)
         out = self.dropout(l_out)
 
-        out = self.fc1(out)
-        out = self.fc2(out[:, -1, :])
+        out = self.fc1(out[:, -1, :])
+        out = self.fc2(out)
 
-        return out, l_hidden
+        return out, state
+    
+    def init_state(self, batch_size, device):
+        return (torch.zeros((batch_size, self.n_hidden), device=device),
+            torch.zeros((batch_size, self.n_hidden), device=device))
 
 
 
 class CnnLstm(nn.Module):
-    def __init__(self, cnn, lstm=None):
+    def __init__(self, cnn=None, lstm=None, num_classes):
         super().__init__()
         self.cnn = cnn
+        self.lstm = lstm 
+        self.num_classes
     
     def forward(self, x):
-        out = self.cnn(x)
+        out1 = self.cnn(x)
+        out2, _ = self.lstm(x) 
+        # out = x.
         return out
 
 

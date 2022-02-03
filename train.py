@@ -69,7 +69,7 @@ transform_image = A.Compose([
 
 dataset = CustomDataMel(
                 csv_file="UrbanSound8K.csv",
-                data_dir="/content/preprocessing_data",
+                data_dir="preprocessing_data",
                 transform_audio=transform_audio,
                 transform_image = transform_image
                 )
@@ -105,9 +105,9 @@ callbacks = [input_monitor_train, input_monitor_valid, checkpoint_callback, earl
 
 # In[9]:
 
-
+gpus = 1 if torch.cuda.is_available() else 0
 trainer = pl.Trainer(
-                gpus=1, 
+                gpus=gpus, 
                 callbacks = callbacks, 
                 # max_epochs=1,
                 )

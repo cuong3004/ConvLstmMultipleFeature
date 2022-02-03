@@ -4,7 +4,9 @@ import random
 import os
 import librosa
 import numpy as np
-
+import torchaudio
+import torch
+import matplotlib.pyplot as plt
 
 class AudioTransform(BasicTransform):
     """Transform for Audio task"""
@@ -25,7 +27,7 @@ class NoiseInjection(AudioTransform):
     def __init__(self, always_apply=False, p=0.5):
         super(NoiseInjection, self).__init__(always_apply, p)
     
-    def apply(self, data, noise_levels=(0, 0.015), **params):
+    def apply(self, data, noise_levels=(0, 0.005), **params):
         sound, sr = data
 
         noise_level = np.random.uniform(*noise_levels)
@@ -102,14 +104,15 @@ class AudioManipulation:
 
     def open_tranform_data(self, file_audio):
         data = self.open(file_audio)
-        data = self.rechannel(data, self.num_channel)
+        # data = self.rechannel(data, self.num_channel)
+        
         data = self.pad_trunc(data, self.max_ms)
         return data
 
     def open(self, path_file, sr=22050):
 
-        sig, sr = librosa.load(path_file)
-        sig = sig.reshape((sig.shape[0], -1))
+        sig, sr = torchaudio.load(path_file)
+        sig = sig[0].numpy()
 
         return (sig, sr) # (sig, sr
 
@@ -135,8 +138,47 @@ class AudioManipulation:
             pad_end_len = max_len - sig_len - pad_begin_len
 
             # Pad with 0s
-            pad_begin = np.zeros((pad_begin_len))
-            pad_end = np.zeros((pad_end_len))
+            pad_begin = np.random.randn(pad_begin_len).astype(sig.dtype) * np.random.uniform(0,0.0005)
+            pad_end = np.random.randn(pad_end_len).astype(sig.dtype) * np.random.uniform(0,0.0005)
             sig = np.concatenate([pad_begin, sig, pad_end])
 
         return (sig, sr)
+
+def plot_specgram(waveform, sample_rate, title="Spectrogram", xlim=None):
+  waveform = waveform.numpy()
+
+  num_channels, num_frames = waveform.shape
+  time_axis = torch.arange(0, num_frames) / sample_rate
+
+  figure, axes = plt.subplots(num_channels, 1)
+  if num_channels == 1:
+    axes = [axes]
+  for c in range(num_channels):
+    axes[c].specgram(waveform[c], Fs=sample_rate)
+    if num_channels > 1:
+      axes[c].set_ylabel(f'Channel {c+1}')
+    if xlim:
+      axes[c].set_xlim(xlim)
+  figure.suptitle(title)
+#   plt.show(block=False)
+
+def plot_waveform(waveform, sample_rate, title="Waveform", xlim=None, ylim=None):
+  waveform = waveform.numpy()
+
+  num_channels, num_frames = waveform.shape
+  time_axis = torch.arange(0, num_frames) / sample_rate
+
+  figure, axes = plt.subplots(num_channels, 1)
+  if num_channels == 1:
+    axes = [axes]
+  for c in range(num_channels):
+    axes[c].plot(time_axis, waveform[c], linewidth=1)
+    axes[c].grid(True)
+    if num_channels > 1:
+      axes[c].set_ylabel(f'Channel {c+1}')
+    if xlim:
+      axes[c].set_xlim(xlim)
+    if ylim:
+      axes[c].set_ylim(ylim)
+  figure.suptitle(title)
+#   plt.show(block=False)

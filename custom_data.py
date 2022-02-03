@@ -28,6 +28,7 @@ class CustomData(Dataset):
         return image, label
 
 
+
 class CustomDataMel(Dataset):
     def __init__(self, csv_file, data_dir, transform_audio=None, transform_image=None):
         self.df = pd.read_csv(f"{data_dir}/{csv_file}")
@@ -80,9 +81,9 @@ class CustomDataMel(Dataset):
                 image = self.transform_image(image=image)['image']
         
                 label = torch.tensor(label)
-        
 
-        return image, label
+            return image, label
+        return data
 
 
         

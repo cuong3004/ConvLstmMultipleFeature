@@ -35,6 +35,8 @@ npobj = np.load("normalize.npz")
 mean, std = npobj['mean'], npobj['std']
 print("mean, std : ", mean, std)
 
+pl.seed_everything(1234)
+
 
 # In[3]:
 

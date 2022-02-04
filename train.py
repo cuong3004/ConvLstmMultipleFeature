@@ -12,7 +12,7 @@ from utils import *
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import librosa.display
-from model import CnnLstm, CNNModel
+from model import CnnLstm, CNNModel, LstmModel
 from torch.utils.data import DataLoader, random_split
 import pytorch_lightning as pl
 from litmodule import LitClassification
@@ -93,6 +93,7 @@ valid_loader = DataLoader(data_valid, batch_size=batch_size, shuffle=False, num_
 cnn_model = mobilenet_v2()
 cnn_model.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
 cnn_model.classifier[1] = torch.nn.Linear(1280,num_classes)
+# model_lstm = LstmModel(n_feature=172, num_classes=10, n_hidden=256, n_layers=2)
 
 
 # In[8]:

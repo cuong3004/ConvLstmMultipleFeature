@@ -73,6 +73,7 @@ class LstmModel(nn.Module):
     def forward(self, x):
 
         x = torch.squeeze(x, 1)
+        x = x.permute(0,2,1)
         
         state = self.init_state(x.shape[0], device)
         l_out, state = self.lstm(x, state)
